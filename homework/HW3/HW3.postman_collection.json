@@ -1,0 +1,460 @@
+{
+  "info": {
+    "_postman_id": "c8a8f7c1-2b4d-4e5a-b9c7-123456789abc",
+    "name": "Антиплагиат Система HW3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Тесты для микросервисной системы проверки работ на плагиат"
+  },
+  "item": [
+    {
+      "name": "1. Health Checks",
+      "item": [
+        {
+          "name": "API Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/fallback/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["fallback", "health"]
+            },
+            "description": "Проверка здоровья API Gateway"
+          },
+          "response": []
+        },
+        {
+          "name": "File Storing Service Health (через Gateway)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/works/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "File Analysis Service Health (через Gateway)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/reports/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["reports", "health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Загрузка работ (студенты)",
+      "item": [
+        {
+          "name": "Первая работа (без плагиата)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentName",
+                  "value": "Иван Петров",
+                  "type": "text"
+                },
+                {
+                  "key": "taskId",
+                  "value": "HW3",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "examples/homework.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/works",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works"]
+            },
+            "description": "Отправка первой работы. Сохраните workId из ответа для последующих тестов."
+          },
+          "response": []
+        },
+        {
+          "name": "Вторая работа (плагиат)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentName",
+                  "value": "Мария Иванова",
+                  "type": "text"
+                },
+                {
+                  "key": "taskId",
+                  "value": "HW3",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "examples/homework2.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/works",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Работа с другим заданием",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentName",
+                  "value": "Алексей Смирнов",
+                  "type": "text"
+                },
+                {
+                  "key": "taskId",
+                  "value": "HW4",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "examples/other_homework.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/works",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Получение отчетов (преподаватели)",
+      "item": [
+        {
+          "name": "Отчет по первой работе",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/reports/work/{{workId1}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["reports", "work", "{{workId1}}"],
+              "variable": [
+                {
+                  "key": "workId1",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Получение отчета по первой работе. plagiarismFlag должен быть false."
+          },
+          "response": []
+        },
+        {
+          "name": "Отчет по второй работе",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/reports/work/{{workId2}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["reports", "work", "{{workId2}}"],
+              "variable": [
+                {
+                  "key": "workId2",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Получение отчета по второй работе. plagiarismFlag должен быть true."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Получение информации о работах",
+      "item": [
+        {
+          "name": "Информация о работе 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/works/{{workId1}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works", "{{workId1}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Информация о работе 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/works/{{workId2}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works", "{{workId2}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Несуществующая работа",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/works/999999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works", "999999"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Тестирование ошибок",
+      "item": [
+        {
+          "name": "Файл слишком большой (>10MB)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentName",
+                  "value": "Тест",
+                  "type": "text"
+                },
+                {
+                  "key": "taskId",
+                  "value": "HW3",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "examples/large_file.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/works",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works"]
+            },
+            "description": "Должен вернуть 413 Payload Too Large"
+          },
+          "response": []
+        },
+        {
+          "name": "Отсутствует обязательный параметр taskId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "studentName",
+                  "value": "Иван",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "examples/homework.txt"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/works",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["works"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Тестирование Circuit Breaker",
+      "item": [
+        {
+          "name": "Запрос отчета при падении сервиса",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/reports/work/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["reports", "work", "1"]
+            },
+            "description": "Перед выполнением остановите File Analysis Service: docker stop hw3-file-analysis-service-1"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "workId1",
+      "value": "4",
+      "type": "any"
+    },
+    {
+      "key": "workId2",
+      "value": "5",
+      "type": "any"
+    },
+    {
+      "key": "workId3",
+      "value": "3",
+      "type": "any"
+    },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Тесты для ответов",
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});",
+          "",
+          "// Для запросов загрузки работы",
+          "if (pm.request.url.toString().includes('/works') && pm.request.method === 'POST') {",
+          "    pm.test(\"Work saved successfully\", function () {",
+          "        var jsonData = pm.response.json();",
+          "        pm.expect(jsonData).to.have.property('id');",
+          "        pm.expect(jsonData).to.have.property('studentName');",
+          "        pm.expect(jsonData).to.have.property('taskId');",
+          "        pm.expect(jsonData).to.have.property('fileName');",
+          "    });",
+          "}",
+          "",
+          "// Для запросов отчетов",
+          "if (pm.request.url.toString().includes('/reports/work/')) {",
+          "    pm.test(\"Report data is valid\", function () {",
+          "        var jsonData = pm.response.json();",
+          "        pm.expect(jsonData).to.be.an('array');",
+          "        if (jsonData.length > 0) {",
+          "            pm.expect(jsonData[0]).to.have.property('plagiarismFlag');",
+          "            pm.expect(jsonData[0]).to.have.property('status');",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "auth": null
+}

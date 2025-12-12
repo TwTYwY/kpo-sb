@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: file-storing-service
+          uri: http://file-storing-service:8081
+          predicates:
+            - Path=/works/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fileStoringService
+                fallbackUri: forward:/fallback/file-storing
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
+                methods: GET,POST
+
+        - id: file-analysis-service
+          uri: http://file-analysis-service:8082
+          predicates:
+            - Path=/reports/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fileAnalysisService
+                fallbackUri: forward:/fallback/file-analysis
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
