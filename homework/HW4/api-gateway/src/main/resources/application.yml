@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      routes:
+        - id: payments-service
+          uri: http://payments-service:8082
+          predicates:
+            - Path=/payments/**
+          filters:
+            - StripPrefix=1
+        - id: orders-service
+          uri: http://orders-service:8081
+          predicates:
+            - Path=/orders/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO

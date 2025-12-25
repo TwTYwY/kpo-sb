@@ -1,0 +1,5 @@
+rootProject.name = 'gozon-shop'
+
+include 'api-gateway'
+include 'orders-service'
+include 'payments-service'
